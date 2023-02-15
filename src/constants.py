@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 LOG_FORMAT = '"%(asctime)s - [%(levelname)s] - %(message)s"'
 DT_FORMAT = '%d.%m.%Y %H:%M:%S'
 MAIN_DOC_URL = 'https://docs.python.org/3/'
