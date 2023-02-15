@@ -63,9 +63,9 @@ python main.py pep -o pretty
 ```
 
 
-## Пример работы парсера
+## Примеры работы парсера
 
-Команда вызова парсера pep с выводом в консоль с PrettyTable:
+1. Команда вызова парсера **pep** с выводом в консоль с PrettyTable:
 ```
 python main.py pep -o pretty
 ```
@@ -91,6 +91,30 @@ https://peps.python.org/pep-0401
 | Total      | 602        |
 +------------+------------+
 "14.02.2023 12:36:56 - [INFO] - Парсер завершил работу."
+```
+
+2. Команда вызова парсера **latest-versions** без дополнительных режимов:
+
+```
+python main.py latest-versions
+```
+
+Ответ в консоли:
+```
+"15.02.2023 15:58:21 - [INFO] - Парсер запущен!"
+"15.02.2023 15:58:21 - [INFO] - Аргументы командной строки: Namespace(clear_cache=False, mode='latest-versions', output=None)"
+Ссылка на документацию Версия Статус
+https://docs.python.org/3.12/ 3.12 in development
+https://docs.python.org/3.11/ 3.11 stable
+https://docs.python.org/3.10/ 3.10 stable
+https://docs.python.org/3.9/ 3.9 security-fixes
+https://docs.python.org/3.8/ 3.8 security-fixes
+https://docs.python.org/3.7/ 3.7 security-fixes
+https://docs.python.org/3.6/ 3.6 EOL
+https://docs.python.org/3.5/ 3.5 EOL
+https://docs.python.org/2.7/ 2.7 EOL
+https://www.python.org/doc/versions/ All versions
+"15.02.2023 15:58:22 - [INFO] - Парсер завершил работу."
 ```
 
 ### Разработчик ###
