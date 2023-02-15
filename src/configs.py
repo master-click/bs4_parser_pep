@@ -1,11 +1,8 @@
 import argparse
-import logging
-from logging.handlers import RotatingFileHandler
+import errno
+import logging.handlers
 
-from constants import BASE_DIR
-
-LOG_FORMAT = '"%(asctime)s - [%(levelname)s] - %(message)s"'
-DT_FORMAT = '%d.%m.%Y %H:%M:%S'
+from constants import BASE_DIR, DT_FORMAT, LOG_FORMAT
 
 
 def configure_argument_parser(available_modes):
@@ -32,9 +29,13 @@ def configure_argument_parser(available_modes):
 
 def configure_logging():
     log_dir = BASE_DIR / 'logs'
-    log_dir.mkdir(exist_ok=True)
+    try:
+        log_dir.mkdir(exist_ok=True)
+    except OSError as exc:
+        if exc.errno != errno.EEXIST:
+            raise
     log_file = log_dir / 'parser.log'
-    rotating_handler = RotatingFileHandler(
+    rotating_handler = logging.handlers.RotatingFileHandler(
         log_file, maxBytes=10 ** 6, backupCount=5, encoding='utf-8'
     )
     logging.basicConfig(

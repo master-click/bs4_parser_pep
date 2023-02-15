@@ -1,3 +1,4 @@
+import errno
 import logging
 import re
 from collections import Counter
@@ -16,8 +17,6 @@ from utils import find_tag, get_response
 def whats_new(session):
     whats_new_url = urljoin(MAIN_DOC_URL, 'whatsnew/')
     response = get_response(session, whats_new_url)
-    if response is None:
-        return
     soup = BeautifulSoup(response.text, features='lxml')
     main_div = find_tag(soup, 'section', attrs={'id': 'what-s-new-in-python'})
     div_with_ul = find_tag(main_div, 'div', attrs={'class': 'toctree-wrapper'})
@@ -29,8 +28,6 @@ def whats_new(session):
         href = version_a_tag['href']
         version_link = urljoin(whats_new_url, href)
         response = get_response(session, version_link)
-        if response is None:
-            continue
         soup = BeautifulSoup(response.text, 'lxml')
         h1 = find_tag(soup, 'h1')
         dl = find_tag(soup, 'dl')
@@ -43,8 +40,6 @@ def whats_new(session):
 
 def latest_versions(session):
     response = get_response(session, MAIN_DOC_URL)
-    if response is None:
-        return
     soup = BeautifulSoup(response.text, 'lxml')
     sidebar = find_tag(soup, 'div', {'class': 'sphinxsidebarwrapper'})
     ul_tags = sidebar.find_all('ul')
@@ -73,8 +68,6 @@ def latest_versions(session):
 def download(session):
     downloads_url = urljoin(MAIN_DOC_URL, 'download.html')
     response = get_response(session, downloads_url)
-    if response is None:
-        return
     soup = BeautifulSoup(response.text, 'lxml')
     main_tag = find_tag(soup, 'div', {'role': 'main'})
     table_tag = find_tag(main_tag, 'table', {'class': 'docutils'})
@@ -84,18 +77,23 @@ def download(session):
     archive_url = urljoin(downloads_url, pdf_a4_link)
     filename = archive_url.split('/')[-1]
     downloads_dir = BASE_DIR / 'downloads'
-    downloads_dir.mkdir(exist_ok=True)
+    try:
+        downloads_dir.mkdir(exist_ok=True)
+    except OSError as exc:
+        if exc.errno != errno.EEXIST:
+            raise
     archive_path = downloads_dir / filename
     response = session.get(archive_url)
-    with open(archive_path, 'wb') as file:
-        file.write(response.content)
-    logging.info(f'Архив был загружен и сохранён: {archive_path}')
+    try:
+        with open(archive_path, 'wb') as file:
+            file.write(response.content)
+        logging.info(f'Архив был загружен и сохранён: {archive_path}')
+    except EnvironmentError as error:
+        logging.error(f'Архив не был загружен. Ошибка: {error}')
 
 
 def pep(session):
     response = get_response(session, PEP_URL)
-    if response is None:
-        return
     soup = BeautifulSoup(response.text, 'lxml')
     section_tag = find_tag(soup, 'section', {'id': 'numerical-index'})
     tbody_tag = find_tag(section_tag, 'tbody')
@@ -107,8 +105,6 @@ def pep(session):
         href = a_tag['href']
         link = urljoin(PEP_URL, href)
         response = get_response(session, link)
-        if response is None:
-            return
         soup = BeautifulSoup(response.text, 'lxml')
         dl = find_tag(soup, 'dl')
         for dt in soup.find_all('dt'):
